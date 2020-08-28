@@ -79,7 +79,16 @@ export function buildQueryPlan(
 ): QueryPlan {
 
   const schema = printComposedSdl(operationContext.schema, operationContext.schema.extensions.serviceList);
-  const query = print(operationContext.operation);
+
+  const document: DocumentNode = {
+    kind: Kind.DOCUMENT,
+    definitions: [
+      operationContext.operation,
+      ...Object.values(operationContext.fragments)
+    ]
+  };
+
+  const query = print(document);
 
   return getQueryPlan(schema, query);
 
